@@ -4,32 +4,50 @@ AI-powered baby face predictor. Upload photos of two parents and get a realistic
 
 **Pipeline:** Claude Vision analyzes facial genetics → FLUX.1-schnell generates a 768×768 baby portrait.
 
-![Baby Predictor UI](https://placehold.co/520x320/1a1a1a/b85c9a?text=Baby+Predictor)
+---
+
+## Adding your API keys
+
+You have two options — pick whichever is easier.
 
 ---
 
-## Features
+### Option A — Settings UI (recommended)
 
-- **Drag-and-drop photo uploads** for mother and father
-- **Gender picker** — Girl, Boy, or Surprise
-- **Genetic analysis** via Claude Vision using Mendelian inheritance rules
-- **AI portrait generation** via Together AI's FLUX.1-schnell (free tier)
-- **Inheritance breakdown** — color-coded bars showing which parent each feature came from
-- **Parent feature grid** — eye color, nose shape, lips, skin tone, hair, face shape
-- **Download** the generated baby portrait
-- **Dark mode** support
-- API keys stored locally only (never sent anywhere except the respective APIs)
+1. Run the app (see [Setup](#setup) below)
+2. Open `http://localhost:3939` in your browser
+3. Click the **⚙️ gear icon** in the top-right corner
+4. Paste your **Claude API key** (`sk-ant-...`) into the first field
+5. Paste your **Together AI key** into the second field
+6. Click **Save Keys**
+
+Keys are written to `.settings.json` in the project folder — never sent anywhere except the respective APIs.
 
 ---
 
-## Stack
+### Option B — Environment file
 
-| Layer | Tech |
-|---|---|
-| Frontend | React 18 + Vite 5 |
-| Backend | Express 4 (Node 18+) |
-| Face analysis | Claude Vision (`claude-opus-4-5`) |
-| Image generation | Together AI — `FLUX.1-schnell-Free` |
+1. In the project root, copy the example file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and fill in your keys:
+   ```
+   CLAUDE_API_KEY=sk-ant-api03-...
+   TOGETHER_API_KEY=...
+   ```
+3. Save the file, then start the server. Keys in `.env` are picked up automatically.
+
+> **Note:** `.env` and `.settings.json` are both in `.gitignore` — your keys will never be committed.
+
+---
+
+## Where to get the keys
+
+| Key | Link | Notes |
+|---|---|---|
+| **Claude API key** | [console.anthropic.com](https://console.anthropic.com) → API Keys | Starts with `sk-ant-` |
+| **Together AI key** | [api.together.ai](https://api.together.ai) → Settings → API Keys | FLUX.1-schnell is on the free tier |
 
 ---
 
@@ -43,27 +61,44 @@ cd BabyPredictor
 npm install
 ```
 
-### 2. Get API keys
-
-| Key | Where to get it |
-|---|---|
-| **Claude API key** | [console.anthropic.com](https://console.anthropic.com) |
-| **Together AI key** | [api.together.ai](https://api.together.ai) — FLUX.1-schnell is on the free tier |
-
-### 3. Build the frontend
+### 2. Build the frontend
 
 ```bash
 npm run build
 ```
 
-### 4. Start the server
+### 3. Start the server
 
 ```bash
 npm start
 # → http://localhost:3939
 ```
 
-Open the app, click the ⚙️ gear icon, and paste in your API keys. They're saved to `.settings.json` on your machine only.
+Then add your API keys via the ⚙️ Settings screen (or via `.env` — see above).
+
+---
+
+## Features
+
+- **Drag-and-drop photo uploads** for mother and father
+- **Gender picker** — Girl, Boy, or Surprise
+- **Genetic analysis** via Claude Vision using Mendelian inheritance rules
+- **AI portrait generation** via Together AI's FLUX.1-schnell (free tier)
+- **Inheritance breakdown** — color-coded bars showing which parent each feature came from
+- **Parent feature grid** — eye color, nose shape, lips, skin tone, hair, face shape
+- **Download** the generated baby portrait
+- **Dark mode** support
+
+---
+
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React 18 + Vite 5 |
+| Backend | Express 4 (Node 18+) |
+| Face analysis | Claude Vision (`claude-opus-4-5`) |
+| Image generation | Together AI — `FLUX.1-schnell-Free` |
 
 ---
 
@@ -80,21 +115,6 @@ npx vite web
 ```
 
 The Vite dev server proxies `/api` requests to `http://localhost:3939`.
-
----
-
-## Environment variables
-
-You can also set keys via environment variables instead of the Settings UI:
-
-```bash
-cp .env.example .env
-# then edit .env
-CLAUDE_API_KEY=sk-ant-...
-TOGETHER_API_KEY=...
-```
-
-The `PORT` variable overrides the default port (3939).
 
 ---
 
