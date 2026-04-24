@@ -7,7 +7,7 @@ const __dirname = dirname(__filename);
 const SETTINGS_FILE = join(__dirname, '../.settings.json');
 
 const defaults = {
-    claudeApiKey: process.env.CLAUDE_API_KEY || '',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
     togetherApiKey: process.env.TOGETHER_API_KEY || ''
 };
 

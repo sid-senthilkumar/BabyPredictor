@@ -2,7 +2,7 @@
 
 AI-powered baby face predictor. Upload photos of two parents and get a realistic portrait of what their child might look like, along with a genetic inheritance breakdown.
 
-**Pipeline:** Claude Vision analyzes facial genetics → FLUX.1-schnell generates a 768×768 baby portrait.
+**Pipeline:** Gemini Vision analyzes facial genetics → FLUX.1-schnell generates a 768×768 baby portrait.
 
 ---
 
@@ -33,7 +33,7 @@ Keys are written to `.settings.json` in the project folder — never sent anywhe
    ```
 2. Open `.env` and fill in your keys:
    ```
-   CLAUDE_API_KEY=sk-ant-api03-...
+   GEMINI_API_KEY=AIza...
    TOGETHER_API_KEY=...
    ```
 3. Save the file, then start the server. Keys in `.env` are picked up automatically.
@@ -46,7 +46,7 @@ Keys are written to `.settings.json` in the project folder — never sent anywhe
 
 | Key | Link | Notes |
 |---|---|---|
-| **Claude API key** | [console.anthropic.com](https://console.anthropic.com) → API Keys | Starts with `sk-ant-` |
+| **Gemini API key** | [aistudio.google.com](https://aistudio.google.com) → Get API key | Starts with `AIza`, free tier available |
 | **Together AI key** | [api.together.ai](https://api.together.ai) → Settings → API Keys | FLUX.1-schnell is on the free tier |
 
 ---
@@ -97,7 +97,7 @@ Then add your API keys via the ⚙️ Settings screen (or via `.env` — see abo
 |---|---|
 | Frontend | React 18 + Vite 5 |
 | Backend | Express 4 (Node 18+) |
-| Face analysis | Claude Vision (`claude-opus-4-5`) |
+| Face analysis | Gemini Vision (`gemini-2.0-flash`) |
 | Image generation | Together AI — `FLUX.1-schnell-Free` |
 
 ---
@@ -121,7 +121,7 @@ The Vite dev server proxies `/api` requests to `http://localhost:3939`.
 ## How it works
 
 1. Both parent photos are base64-encoded in the browser and sent to `POST /api/predict`
-2. The server sends both images to Claude Vision with a genetics prompt — Claude returns structured JSON with `motherFeatures`, `fatherFeatures`, `inheritance[]`, and a detailed FLUX image prompt
+2. The server sends both images to Gemini Vision with a genetics prompt — Gemini returns structured JSON with `motherFeatures`, `fatherFeatures`, `inheritance[]`, and a detailed FLUX image prompt
 3. The FLUX prompt is sent to Together AI, which returns a 768×768 portrait as `b64_json`
 4. The result (image + analysis) is returned to the frontend
 

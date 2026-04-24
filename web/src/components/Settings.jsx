@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function Settings({ onBack }) {
-    const [keys, setKeys] = useState({ claudeApiKey: '', togetherApiKey: '' });
+    const [keys, setKeys] = useState({ geminiApiKey: '', togetherApiKey: '' });
     const [status, setStatus] = useState('idle');
 
     useEffect(() => {
@@ -11,7 +11,7 @@ export default function Settings({ onBack }) {
     const save = async () => {
         setStatus('saving');
         const payload = { ...keys };
-        if (payload.claudeApiKey?.startsWith('••••'))   delete payload.claudeApiKey;
+        if (payload.geminiApiKey?.startsWith('••••'))   delete payload.geminiApiKey;
         if (payload.togetherApiKey?.startsWith('••••')) delete payload.togetherApiKey;
         await fetch('/api/settings', {
             method: 'POST',
@@ -36,11 +36,11 @@ export default function Settings({ onBack }) {
             <main className="app-main">
                 <div className="settings-form">
                     <div className="field-group">
-                        <label className="field-label">Claude API Key <span className="field-badge">Required</span></label>
-                        <p className="field-desc">Used for face analysis via Claude Vision. Get yours at console.anthropic.com.</p>
-                        <input type="password" className="field-input" placeholder="sk-ant-..."
-                            value={keys.claudeApiKey}
-                            onChange={e => setKeys({ ...keys, claudeApiKey: e.target.value })} />
+                        <label className="field-label">Gemini API Key <span className="field-badge">Required</span></label>
+                        <p className="field-desc">Used for face analysis via Gemini Vision. Get yours free at aistudio.google.com.</p>
+                        <input type="password" className="field-input" placeholder="AIza..."
+                            value={keys.geminiApiKey}
+                            onChange={e => setKeys({ ...keys, geminiApiKey: e.target.value })} />
                     </div>
                     <div className="field-group">
                         <label className="field-label">Together AI API Key <span className="field-badge">Required</span></label>

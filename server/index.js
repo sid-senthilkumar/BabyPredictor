@@ -18,14 +18,14 @@ app.use(express.static(join(__dirname, '../web/dist')));
 app.get('/api/settings', async (req, res) => {
     const s = await getSettings();
     res.json({
-        claudeApiKey:   s.claudeApiKey   ? '••••' + s.claudeApiKey.slice(-4)   : '',
+        geminiApiKey:   s.geminiApiKey   ? '••••' + s.geminiApiKey.slice(-4)   : '',
         togetherApiKey: s.togetherApiKey ? '••••' + s.togetherApiKey.slice(-4) : ''
     });
 });
 
 app.post('/api/settings', async (req, res) => {
     const incoming = req.body;
-    if (incoming.claudeApiKey?.startsWith('••••'))   delete incoming.claudeApiKey;
+    if (incoming.geminiApiKey?.startsWith('••••'))   delete incoming.geminiApiKey;
     if (incoming.togetherApiKey?.startsWith('••••')) delete incoming.togetherApiKey;
     await saveSettings(incoming);
     res.json({ ok: true });

@@ -1,19 +1,19 @@
 import { getSettings } from './settings.js';
 
-const CLAUDE_MODEL = 'claude-opus-4-5';
+const GEMINI_MODEL = 'gemini-2.0-flash';
 const TOGETHER_MODEL = 'black-forest-labs/FLUX.1-schnell-Free';
 
 export async function predictBaby({ momBase64, dadBase64, momMime, dadMime, gender }) {
     const settings = await getSettings();
 
-    if (!settings.claudeApiKey) {
-        throw new Error('Claude API key not configured. Open Settings to add it.');
+    if (!settings.geminiApiKey) {
+        throw new Error('Gemini API key not configured. Open Settings to add it.');
     }
     if (!settings.togetherApiKey) {
         throw new Error('Together AI API key not configured. Open Settings to add it.');
     }
 
-    const analysis = await analyzeParents(settings.claudeApiKey, momBase64, dadBase64, momMime, dadMime, gender);
+    const analysis = await analyzeParents(settings.geminiApiKey, momBase64, dadBase64, momMime, dadMime, gender);
     const babyImageUrl = await generatePortrait(settings.togetherApiKey, analysis.prompt);
 
     return { babyImageUrl, analysis };
@@ -22,24 +22,18 @@ export async function predictBaby({ momBase64, dadBase64, momMime, dadMime, gend
 async function analyzeParents(apiKey, momBase64, dadBase64, momMime, dadMime, gender) {
     const genderLabel = gender === 'boy' ? 'baby boy' : gender === 'girl' ? 'baby girl' : 'baby';
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-            model: CLAUDE_MODEL,
-            max_tokens: 1600,
-            messages: [{
-                role: 'user',
-                content: [
-                    { type: 'image', source: { type: 'base64', media_type: momMime, data: momBase64 } },
-                    { type: 'image', source: { type: 'base64', media_type: dadMime, data: dadBase64 } },
-                    {
-                        type: 'text',
-                        text: `You are a genetic features analyst predicting child appearance from parent photos.
+    const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { inlineData: { mimeType: momMime, data: momBase64 } },
+                        { inlineData: { mimeType: dadMime, data: dadBase64 } },
+                        {
+                            text: `You are a genetic features analyst predicting child appearance from parent photos.
 Image 1 = MOTHER. Image 2 = FATHER.
 
 Analyze visible facial genetics of each parent using Mendelian inheritance principles:
@@ -78,22 +72,23 @@ Respond ONLY with valid JSON — no prose, no markdown fences:
 }
 
 In the prompt field, replace [REPLACE WITH SPECIFIC CHILD FEATURE DESCRIPTION blending both parents] with a very specific description: exact eye color+shape, nose shape, lip shape, skin tone, hair color+texture, face shape — derived from the genetic blend you predicted. Do not leave placeholder text in the prompt.`
-                    }
-                ]
-            }]
-        })
-    });
+                        }
+                    ]
+                }]
+            })
+        }
+    );
 
     if (!res.ok) {
         const body = await res.text();
-        throw new Error(`Claude API error ${res.status}: ${body}`);
+        throw new Error(`Gemini API error ${res.status}: ${body}`);
     }
 
     const data = await res.json();
-    const raw = data.content?.[0]?.text || '';
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     const match = raw.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('Could not parse face analysis from Claude. Please try again.');
+    if (!match) throw new Error('Could not parse face analysis from Gemini. Please try again.');
 
     try {
         return JSON.parse(match[0]);
